@@ -1,38 +1,47 @@
-name: EC2-pipeline
+name: Terraform CI/CD
 
 on:
   push:
-    branches: main
+    branches:
+      - main
 
-env:
-  AWS_REGION: "ap-south-1"
+  workflow_dispatch:
 
 jobs:
   terraform:
+    name: Terraform
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout folder
+
+      # 1. Checkout Terraform code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: authentication
+      # 2. Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ap-south-1
 
-      - name: terraform install
+      # 3. Install Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: tf.init
+      # 4. Initialize Terraform
+      - name: Terraform Init
         run: terraform init
-        working-directory: ./Environment/Dev
 
-      - name: tf.plan
-        run: terraform plan -out=tfplan
-        working-directory: ./Environment/Dev
+      # 5. Check Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
 
-      - name: tf.apply
-        run: terraform apply -auto-approve tfplan
-        working-directory: ./Environment/Dev
+      # 6. Create execution plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      # 7. Apply infrastructure
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
