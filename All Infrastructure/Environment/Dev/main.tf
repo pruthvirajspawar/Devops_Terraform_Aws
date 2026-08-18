@@ -1,3 +1,6 @@
 module "My-VPC" {
-    source = "../Module"
+  source = "../Module"
+
+  key_name  = var.key_name
+  instances = var.instances
 }
