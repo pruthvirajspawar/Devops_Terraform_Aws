@@ -1,3 +1,3 @@
 module "My-VPC" {
-    source = "..Module "
+    source = "../Module"
 }
